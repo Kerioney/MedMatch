@@ -28,6 +28,12 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    history: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Drug",
+        },
+    ],
 })
 
 userSchema.pre("save", async function (next) {

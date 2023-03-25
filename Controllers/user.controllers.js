@@ -107,8 +107,48 @@ let login = async (req, res) => {
         throw error
     }
 }
+
+let userProfile = async (req, res, next) => {
+    try {
+        let user = await User.findById(req.user.userId).select(
+            "-password -_id -__v"
+        )
+        res.status(200).json({
+            message: "User profile fetched successfully.",
+            user,
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
+let editUser = async (req, res, next) => {
+    const { userName, email } = req.body
+    try {
+        await User.findByIdAndUpdate(
+            { _id: req.user.userId },
+            { userName, email }
+        )
+
+        res.status(200).json({
+            message: "User updated successfully.",
+            // user: { userName: user.userName, email: user.email },
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
 module.exports = {
     signup,
     verify,
     login,
+    editUser,
+    userProfile,
 }

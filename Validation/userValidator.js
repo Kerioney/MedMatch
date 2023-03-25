@@ -8,13 +8,9 @@ module.exports = {
             .object()
             .required()
             .keys({
-                userName: joi
-                    .string()
-                    .required()
-                    .messages({
-                        "string.empty": "Display name cannot be empty",
-                    })
-                    .optional(),
+                userName: joi.string().required().messages({
+                    "string.empty": "Display name cannot be empty",
+                }), //
                 email: joi
                     .string()
                     .required()
