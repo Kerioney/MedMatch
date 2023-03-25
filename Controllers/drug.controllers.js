@@ -1,4 +1,5 @@
 const Drug = require("../Models/drug.model")
+const User = require("../Models/user.model")
 
 let getAllDrugs = async (req, res, next) => {
     const currentPage = req.query.page || 1 // if there is no page in the query it will be 1
@@ -35,12 +36,30 @@ let getAllDrugs = async (req, res, next) => {
 }
 let getDrug = async (req, res, next) => {
     try {
+        // Find the drug by ID
         let drug = await Drug.findById(req.params.id)
+
+        // Find the user by ID
+        const user = await User.findById(req.user.userId)
+
+        // If drug is not found, throw a 404 error
+        if (!drug || drug.length === 0) {
+            const error = new Error("Could not find any drug")
+            error.statusCode = 404
+            throw error
+        }
+
+        // Send the drug data in the response body
         res.status(200).json({
             message: "Fetched drug successfully.",
             drug,
         })
+
+        // Add the drug ID to the user's history array and save the user
+        user.history.push(req.params.id)
+        await user.save()
     } catch (err) {
+        // Handle errors
         if (!err.statusCode) {
             err.statusCode = 500
         }
@@ -113,9 +132,37 @@ let drugSearch = async (req, res, next) => {
         next(err)
     }
 }
+
+const deleteHistory = async (req, res, next) => {
+    try {
+        const userId = req.user.userId
+        const drugId = req.params.id
+
+        // Find the user and update their history by removing the drug ID
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $pull: { history: drugId } }, // $pull removes the drug ID from the history array
+            { new: true }
+        )
+
+        // Send a response with the updated user object
+        res.status(200).json({
+            message: "Drug deleted successfully from user history.",
+            user,
+        })
+    } catch (err) {
+        // Handle errors
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
 module.exports = {
     getAllDrugs,
     getDrug,
     similarDrugs,
     drugSearch,
+    deleteHistory,
 }

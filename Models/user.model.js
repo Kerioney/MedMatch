@@ -15,15 +15,6 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    // dateOfBirth: {
-    //     type: Date,
-    //     required: true,
-    // },
-    // sex: {
-    //     type: String,
-    //     enum: ['male', 'female'],
-    //     required: true,
-    // },
     createdAt: {
         type: Date,
         default: Date.now,

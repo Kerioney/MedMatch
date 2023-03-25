@@ -182,9 +182,9 @@ let resetPassword = async (req, res, next) => {
 
 let userProfile = async (req, res, next) => {
     try {
-        let user = await User.findById(req.user.userId).select(
-            "-password -_id -__v"
-        )
+        let user = await User.findById(req.user.userId)
+            .select("-password -_id -__v")
+            .populate("history")
         res.status(200).json({
             message: "User profile fetched successfully.",
             user,
@@ -202,12 +202,13 @@ let editUser = async (req, res, next) => {
     try {
         await User.findByIdAndUpdate(
             { _id: req.user.userId },
-            { userName, email }
+            { userName, email },
+            { new: true }
         )
 
         res.status(200).json({
             message: "User updated successfully.",
-            // user: { userName: user.userName, email: user.email },
+            user: { userName, email },
         })
     } catch (err) {
         if (!err.statusCode) {
