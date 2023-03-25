@@ -9,4 +9,11 @@ route.get("/verify", userController.verify)
 route.post("/login", validator(userSchema.loginSchema), userController.login)
 route.get("/userProfile", isAuth, userController.userProfile)
 route.put("/editUser", isAuth, userController.editUser)
+route.post("/forgetPassword", userController.forgetPassword)
+route.put(
+    "/reset-password",
+    validator(userSchema.forgetPasswordSchema),
+    userController.resetPassword
+)
+
 module.exports = route

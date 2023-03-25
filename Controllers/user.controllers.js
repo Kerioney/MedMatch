@@ -108,6 +108,78 @@ let login = async (req, res) => {
     }
 }
 
+// forget password
+let forgetPassword = async (req, res, next) => {
+    const { email } = req.body
+    try {
+        const checkMail = await User.find({ email })
+        if (!checkMail || checkMail.length === 0) {
+            res.status(404).json({ message: "Email doesn't exist." })
+        } else {
+            let token = jwt.sign({ email }, process.env.TOKEN_HASH, {
+                expiresIn: "1h",
+            })
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+            const msg = {
+                to: `${email}`, // user email address
+                from: ` ${process.env.EMAIL}`, // sender address
+                subject: "Reset your password", // subject line
+                html: `<!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <title>Reset your password</title>
+              </head>
+              <body>
+                <div style="background-color: #f4f4f4; padding: 20px;">
+                  <div style="background-color: #ffffff; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2>Reset your password</h2>
+                    <p>Hi,</p>
+                    <p>Please click on the following link to reset your password:</p>
+                    <p style="text-align: center; margin-top: 30px;"><a href="http://localhost:3000/reset-password?token=${token}" style="background-color: #4CAF50; color: #ffffff; padding: 12px 20px; text-decoration: none; display: inline-block; border-radius: 5px;">Reset Password</a></p>
+                    <p>If you did not request this, please ignore this email.</p>
+                  </div>
+                </div>
+              </body>
+              </html>
+              `,
+            }
+            await sgMail.send(msg).then(
+                res.status(201).json({
+                    message: "Please check your email to reset your password.",
+                })
+            )
+        }
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+// change password
+// the token is sent to the user's email
+
+let resetPassword = async (req, res, next) => {
+    const { password } = req.body
+    const { token } = req.query
+    try {
+        let decoded = jwt.verify(token, process.env.TOKEN_HASH)
+        const user = await User.findOne({ email: decoded.email })
+        user.password = password // change password
+        await user.save().then(
+            res.status(200).json({
+                message: "Password changed successfully.",
+            })
+        )
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
 let userProfile = async (req, res, next) => {
     try {
         let user = await User.findById(req.user.userId).select(
@@ -149,6 +221,8 @@ module.exports = {
     signup,
     verify,
     login,
+    forgetPassword,
+    resetPassword,
     editUser,
     userProfile,
 }
