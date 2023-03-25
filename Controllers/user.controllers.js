@@ -1,4 +1,4 @@
-const User = require("../Models/user")
+const User = require("../Models/user.model")
 // const nodemailer = require("nodemailer")
 const jwt = require("jsonwebtoken")
 const sgMail = require("@sendgrid/mail")

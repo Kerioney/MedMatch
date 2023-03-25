@@ -1,5 +1,5 @@
-const User = require("../models/user")
-const Drug = require("../models/drugs")
+const User = require("../models/user.model")
+const Drug = require("../models/drug.model")
 
 let getallUsers = async (req, res, next) => {
     try {

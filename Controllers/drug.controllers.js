@@ -1,4 +1,4 @@
-const Drug = require("../models/drugs")
+const Drug = require("../Models/drug.model")
 
 let getAllDrugs = async (req, res, next) => {
     const currentPage = req.query.page || 1 // if there is no page in the query it will be 1
@@ -62,7 +62,7 @@ let similarDrugs = async (req, res, next) => {
         })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
-            // i want to sort the drugs by price ascending
+            // .select(" -category") // select the name and activeIngredient fields
             .sort({ price: 1 })
         res.status(200).json({
             message: "Fetched similar drugs successfully.",
@@ -96,18 +96,16 @@ let drugSearch = async (req, res, next) => {
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
 
-        if (!drugs) {
-            const error = new Error("Could not find any drug")
+        if (!drugs || drugs.length === 0) {
+            const error = new Error("The drug is not found")
             error.statusCode = 404
             throw error
-        } else {
-            res.status(200).json({
-                message: "Fetched drugs successfully.",
-
-                drugs,
-                totalDrugs,
-            })
         }
+        res.status(200).json({
+            message: "Fetched drugs successfully.",
+            drugs,
+            totalDrugs,
+        })
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500
