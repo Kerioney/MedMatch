@@ -1,9 +1,9 @@
-const Drug = require("../Models/drug.model")
-const User = require("../Models/user.model")
+const drugModel = require("../Models/drug.model")
+const userModel = require("../Models/user.model")
 
 let getallUsers = async (req, res, next) => {
     try {
-        const users = await User.find()
+        const users = await userModel.find()
         if (!users) {
             const error = new Error("Could not find any user")
             error.statusCode = 404
@@ -28,9 +28,9 @@ let getallUsers = async (req, res, next) => {
     }
 }
 
-let getUser = async (req, res) => {
+let getUser = async (req, res, next) => {
     try {
-        let user = await User.findById(req.params.id)
+        let user = await userModel.findById(req.params.id)
         res.status(200).json({
             message: "Fetched user successfully.",
             user: {
@@ -48,9 +48,9 @@ let getUser = async (req, res) => {
     }
 }
 
-let deleteUser = async (req, res) => {
+let deleteUser = async (req, res, next) => {
     try {
-        await User.findByIdAndRemove(req.params.id)
+        await userModel.findByIdAndRemove(req.params.id)
         res.status(200).json({
             message: "User deleted successfully.",
         })
@@ -62,10 +62,10 @@ let deleteUser = async (req, res) => {
     }
 }
 
-let addDrug = async (req, res) => {
+let addDrug = async (req, res, next) => {
     const { name, activeIngredient, category, price } = req.body
     try {
-        let drug = await Drug.insertMany({
+        let drug = await drugModel.insertMany({
             name,
             activeIngredient,
             category,
@@ -83,9 +83,9 @@ let addDrug = async (req, res) => {
     }
 }
 
-let deleteDrug = async (req, res) => {
+let deleteDrug = async (req, res, next) => {
     try {
-        await Drug.findByIdAndRemove(req.params.id)
+        await drugModel.findByIdAndRemove(req.params.id)
         res.status(200).json({
             message: "Drug deleted successfully.",
         })
@@ -100,16 +100,18 @@ let deleteDrug = async (req, res) => {
 let editDrug = async (req, res) => {
     const { name, activeIngredient, category, price } = req.body
     try {
-        let drug = await Drug.findByIdAndUpdate(
-            req.params.id,
-            {
-                name,
-                activeIngredient,
-                category,
-                price,
-            },
-            { new: true }
-        ).select("-__v")
+        let drug = await drugModel
+            .findByIdAndUpdate(
+                req.params.id,
+                {
+                    name,
+                    activeIngredient,
+                    category,
+                    price,
+                },
+                { new: true }
+            )
+            .select("-__v")
         res.status(200).json({
             message: "Drug updated successfully.",
             drug,
