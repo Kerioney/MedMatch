@@ -8,7 +8,7 @@ const accessLogStream = fs.createWriteStream(
     { flags: "a" } //
 )
 
-const logger = morgan("common", {
+const logger = morgan("short", {
     stream: accessLogStream,
 })
 

@@ -70,3 +70,47 @@ let addDrug = async (req, res) => {
         next(err)
     }
 }
+
+let deletedDrug = async (req, res) => {
+    try {
+        await Drug.findByIdAndRemove(req.params.id)
+        res.status(200).json({
+            message: "Drug deleted successfully.",
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
+let editDrug = async (req, res) => {
+    const { name, activeIngredient, category, price } = req.body
+    try {
+        let drug = await Drug.findByIdAndUpdate(req.params.id, {
+            name,
+            activeIngredient,
+            category,
+            price,
+        })
+        res.status(200).json({
+            message: "Drug updated successfully.",
+            drug,
+        })
+    } catch (err) {
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
+module.exports = {
+    getallUsers,
+    getUser,
+    deleteUser,
+    addDrug,
+    deletedDrug,
+    editDrug,
+}
