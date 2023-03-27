@@ -90,6 +90,7 @@ let login = async (req, res) => {
                         email: user.email,
                         userId: user._id,
                         userName: user.userName,
+                        role: user.role,
                     },
                     process.env.TOKEN_HASH,
                     { expiresIn: "1h" }
