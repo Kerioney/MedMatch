@@ -9,20 +9,22 @@ const errorHandling = require("./Middleware/error-handling")
 require("dotenv").config()
 
 //Routes:
+const logger = require("./Logs/logs.js")
 const userRoutes = require("./Routes/user.routes")
 const drugRoutes = require("./Routes/drug.routes")
-const logger = require("./Logs/logs.js")
+const adminRoutes = require("./Routes/admin.routes")
 
 connection(app)
 
 //Middleware:
 app.use(logger)
 app.use(express.json())
+// app.use(express.urlencoded({ extended: false }))
 app.use(helmet())
 app.use(mongoSanitize())
 app.use(cors())
 
 app.use(userRoutes)
 app.use(drugRoutes)
-
+app.use("/admin", adminRoutes)
 app.use(errorHandling)

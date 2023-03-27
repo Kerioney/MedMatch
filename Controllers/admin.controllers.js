@@ -1,5 +1,5 @@
-const User = require("../models/user.model")
-const Drug = require("../models/drug.model")
+const Drug = require("../Models/drug.model")
+const User = require("../Models/user.model")
 
 let getallUsers = async (req, res, next) => {
     try {
@@ -11,7 +11,14 @@ let getallUsers = async (req, res, next) => {
         }
         res.status(200).json({
             message: "Fetched users successfully.",
-            users,
+            users: users.map((users) => {
+                return {
+                    id: users._id,
+                    username: users.userName,
+                    email: users.email,
+                    role: users.role,
+                }
+            }),
         })
     } catch (err) {
         if (!err.statusCode) {
@@ -26,7 +33,12 @@ let getUser = async (req, res) => {
         let user = await User.findById(req.params.id)
         res.status(200).json({
             message: "Fetched user successfully.",
-            user,
+            user: {
+                id: user._id,
+                username: user.userName,
+                email: user.email,
+                role: user.role,
+            },
         })
     } catch (err) {
         if (!err.statusCode) {
@@ -38,7 +50,7 @@ let getUser = async (req, res) => {
 
 let deleteUser = async (req, res) => {
     try {
-        let user = await User.findByIdAndRemove(req.params.id)
+        await User.findByIdAndRemove(req.params.id)
         res.status(200).json({
             message: "User deleted successfully.",
         })
@@ -71,7 +83,7 @@ let addDrug = async (req, res) => {
     }
 }
 
-let deletedDrug = async (req, res) => {
+let deleteDrug = async (req, res) => {
     try {
         await Drug.findByIdAndRemove(req.params.id)
         res.status(200).json({
@@ -88,12 +100,16 @@ let deletedDrug = async (req, res) => {
 let editDrug = async (req, res) => {
     const { name, activeIngredient, category, price } = req.body
     try {
-        let drug = await Drug.findByIdAndUpdate(req.params.id, {
-            name,
-            activeIngredient,
-            category,
-            price,
-        })
+        let drug = await Drug.findByIdAndUpdate(
+            req.params.id,
+            {
+                name,
+                activeIngredient,
+                category,
+                price,
+            },
+            { new: true }
+        ).select("-__v")
         res.status(200).json({
             message: "Drug updated successfully.",
             drug,
@@ -111,6 +127,6 @@ module.exports = {
     getUser,
     deleteUser,
     addDrug,
-    deletedDrug,
+    deleteDrug,
     editDrug,
 }
