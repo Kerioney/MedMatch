@@ -25,6 +25,11 @@ const userSchema = new Schema({
             ref: "Drug",
         },
     ],
+    role: {
+        type: String,
+        enum: ["user", "admin"],
+        default: "user",
+    },
 })
 
 userSchema.pre("save", async function (next) {
