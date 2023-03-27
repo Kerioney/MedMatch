@@ -10,7 +10,7 @@ let getAllDrugs = async (req, res, next) => {
         const count = await Drug.find().countDocuments() // count the number of drugs
         totalDrugs = count
         const drugs = await Drug.find()
-            .select(" -category") // select the name and activeIngredient fields
+            .select(" -category -__v") // select the name and activeIngredient fields
 
             .skip((currentPage - 1) * perPage) // skip the number of drugs that we want to skip
             // so here in the skip we won't skip the first page
@@ -37,7 +37,7 @@ let getAllDrugs = async (req, res, next) => {
 let getDrug = async (req, res, next) => {
     try {
         // Find the drug by ID
-        let drug = await Drug.findById(req.params.id)
+        let drug = await Drug.findById(req.params.id).select("-__v")
 
         // Find the user by ID
         const user = await User.findById(req.user.userId)
@@ -103,7 +103,7 @@ let drugSearch = async (req, res, next) => {
     let totalDrugs
     try {
         const count = await Drug.find({
-            name: { $regex: search, $options: "i" },
+            name: { $regex: "^" + search, $options: "i" },
         }).countDocuments() // count the number of drugs
         totalDrugs = count
 
