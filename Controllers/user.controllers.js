@@ -206,17 +206,17 @@ let userProfile = async (req, res, next) => {
 }
 
 let editUser = async (req, res, next) => {
-    const { userName, email } = req.body
+    const { userName } = req.body
     try {
         await userModel.findByIdAndUpdate(
             { _id: req.user.userId },
-            { userName, email },
+            { userName },
             { new: true }
         )
 
         res.status(200).json({
             message: "User updated successfully.",
-            user: { userName, email },
+            user: { userName },
         })
     } catch (err) {
         if (!err.statusCode) {
