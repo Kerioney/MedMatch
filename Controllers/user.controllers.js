@@ -49,12 +49,14 @@ let signup = async (req, res) => {
             )
         }
     } catch (err) {
-        const error = new Error(err)
-        throw error
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
     }
 }
 
-let verify = async (req, res) => {
+let verify = async (req, res, next) => {
     const { token } = req.query
     try {
         let decoded = jwt.verify(token, process.env.TOKEN_HASH)
@@ -69,12 +71,14 @@ let verify = async (req, res) => {
             })
         )
     } catch (err) {
-        const error = new Error(err)
-        throw error
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
     }
 }
 
-let login = async (req, res) => {
+let login = async (req, res, next) => {
     const { email, password } = req.body
     try {
         let user = await userModel.findOne({ email })
@@ -104,8 +108,10 @@ let login = async (req, res) => {
             }
         }
     } catch (err) {
-        const error = new Error(err)
-        throw error
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
     }
 }
 
