@@ -1,5 +1,5 @@
-const Drug = require("../Models/drug.model")
-const User = require("../Models/user.model")
+const drugModel = require("../Models/drug.model")
+const userModel = require("../Models/user.model")
 
 let getAllDrugs = async (req, res, next) => {
     const currentPage = req.query.page || 1 // if there is no page in the query it will be 1
@@ -7,9 +7,10 @@ let getAllDrugs = async (req, res, next) => {
     let totalDrugs // total number of drugs
 
     try {
-        const count = await Drug.find().countDocuments() // count the number of drugs
+        const count = await drugModel.find().countDocuments() // count the number of drugs
         totalDrugs = count
-        const drugs = await Drug.find()
+        const drugs = await drugModel
+            .find()
             .select(" -category -__v") // select the name and activeIngredient fields
 
             .skip((currentPage - 1) * perPage) // skip the number of drugs that we want to skip
@@ -37,10 +38,10 @@ let getAllDrugs = async (req, res, next) => {
 let getDrug = async (req, res, next) => {
     try {
         // Find the drug by ID
-        let drug = await Drug.findById(req.params.id).select("-__v")
+        let drug = await drugModel.findById(req.params.id).select("-__v")
 
         // Find the user by ID
-        const user = await User.findById(req.user.userId)
+        const user = await userModel.findById(req.user.userId)
 
         // If drug is not found, throw a 404 error
         if (!drug || drug.length === 0) {
@@ -71,14 +72,17 @@ let similarDrugs = async (req, res, next) => {
         const currentPage = req.query.page || 1
         const perPage = req.query.perPage || 6
         let totalDrugs
-        let drug = await Drug.findById(req.params.id)
-        const count = await Drug.find({
-            activeIngredient: drug.activeIngredient,
-        }).countDocuments()
+        let drug = await drugModel.findById(req.params.id)
+        const count = await drugModel
+            .find({
+                activeIngredient: drug.activeIngredient,
+            })
+            .countDocuments()
         totalDrugs = count
-        let similarDrugs = await Drug.find({
-            activeIngredient: drug.activeIngredient,
-        })
+        let similarDrugs = await drugModel
+            .find({
+                activeIngredient: drug.activeIngredient,
+            })
             .skip((currentPage - 1) * perPage)
             .limit(perPage)
             // .select(" -category") // select the name and activeIngredient fields
@@ -102,14 +106,17 @@ let drugSearch = async (req, res, next) => {
     const perPage = req.query.perPage || 6
     let totalDrugs
     try {
-        const count = await Drug.find({
-            name: { $regex: "^" + search, $options: "i" },
-        }).countDocuments() // count the number of drugs
+        const count = await drugModel
+            .find({
+                name: { $regex: "^" + search, $options: "i" },
+            })
+            .countDocuments() // count the number of drugs
         totalDrugs = count
 
-        const drugs = await Drug.find({
-            name: { $regex: "^" + search, $options: "i" },
-        })
+        const drugs = await drugModel
+            .find({
+                name: { $regex: "^" + search, $options: "i" },
+            })
             .select(" -category") // select the name and activeIngredient fields
             // pagination
             .skip((currentPage - 1) * perPage)
@@ -139,7 +146,7 @@ const deleteHistory = async (req, res, next) => {
         const drugId = req.params.id
 
         // Find the user and update their history by removing the drug ID
-        const user = await User.findByIdAndUpdate(
+        const user = await userModel.findByIdAndUpdate(
             userId,
             { $pull: { history: drugId } }, // $pull removes the drug ID from the history array
             { new: true }

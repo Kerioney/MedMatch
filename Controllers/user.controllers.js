@@ -1,4 +1,4 @@
-const User = require("../Models/user.model")
+const userModel = require("../Models/user.model")
 // const nodemailer = require("nodemailer")
 const jwt = require("jsonwebtoken")
 const sgMail = require("@sendgrid/mail")
@@ -7,7 +7,7 @@ let signup = async (req, res) => {
     const { email, password, userName } = req.body
 
     try {
-        let existingUser = await User.findOne({ email })
+        let existingUser = await userModel.findOne({ email })
 
         if (existingUser) {
             res.status(409).json({ message: "User already exists" })
@@ -58,7 +58,7 @@ let verify = async (req, res) => {
     const { token } = req.query
     try {
         let decoded = jwt.verify(token, process.env.TOKEN_HASH)
-        const newUser = new User({
+        const newUser = new userModel({
             email: decoded.email,
             password: decoded.password,
             userName: decoded.userName,
@@ -77,7 +77,7 @@ let verify = async (req, res) => {
 let login = async (req, res) => {
     const { email, password } = req.body
     try {
-        let user = await User.findOne({ email })
+        let user = await userModel.findOne({ email })
         if (!user) {
             res.status(404).json({ message: "User not found" })
         } else {
@@ -113,7 +113,7 @@ let login = async (req, res) => {
 let forgetPassword = async (req, res, next) => {
     const { email } = req.body
     try {
-        const checkMail = await User.find({ email })
+        const checkMail = await userModel.find({ email })
         if (!checkMail || checkMail.length === 0) {
             res.status(404).json({ message: "Email doesn't exist." })
         } else {
@@ -166,7 +166,7 @@ let resetPassword = async (req, res, next) => {
     const { token } = req.query
     try {
         let decoded = jwt.verify(token, process.env.TOKEN_HASH)
-        const user = await User.findOne({ email: decoded.email })
+        const user = await userModel.findOne({ email: decoded.email })
         user.password = password // change password
         await user.save().then(
             res.status(200).json({
@@ -183,7 +183,8 @@ let resetPassword = async (req, res, next) => {
 
 let userProfile = async (req, res, next) => {
     try {
-        let user = await User.findById(req.user.userId)
+        let user = await userModel
+            .findById(req.user.userId)
             .select("-password -_id -__v")
             .populate("history")
         res.status(200).json({
@@ -201,7 +202,7 @@ let userProfile = async (req, res, next) => {
 let editUser = async (req, res, next) => {
     const { userName, email } = req.body
     try {
-        await User.findByIdAndUpdate(
+        await userModel.findByIdAndUpdate(
             { _id: req.user.userId },
             { userName, email },
             { new: true }
