@@ -1,4 +1,5 @@
-module.exports = (req, res, next) => {
+const isAuth = require("./isAuth")
+let adminAuth = (req, res, next) => {
     try {
         if (req.user.role !== "admin") {
             const error = new Error("Not authorized.")
@@ -13,3 +14,7 @@ module.exports = (req, res, next) => {
         next(err)
     }
 }
+
+const isAdmin = [isAuth, adminAuth]
+
+module.exports = isAdmin
