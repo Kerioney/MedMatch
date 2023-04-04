@@ -13,7 +13,7 @@ const logger = require("./Logs/logs.js")
 const userRoutes = require("./Routes/user.routes")
 const drugRoutes = require("./Routes/drug.routes")
 const adminRoutes = require("./Routes/admin.routes")
-
+const cartRoutes = require("./Routes/cart.routes")
 connection(app)
 
 //Middleware:
@@ -27,4 +27,5 @@ app.use(cors())
 app.use(userRoutes)
 app.use(drugRoutes)
 app.use("/admin", adminRoutes)
+app.use("/cart", cartRoutes)
 app.use(errorHandling)
