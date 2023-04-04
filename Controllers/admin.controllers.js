@@ -30,7 +30,7 @@ let getallUsers = async (req, res, next) => {
 
 let getUser = async (req, res, next) => {
     try {
-        let user = await userModel.findById(req.params.id)
+        let user = await userModel.findById(req.params.userId)
         res.status(200).json({
             message: "Fetched user successfully.",
             user: {
@@ -50,7 +50,7 @@ let getUser = async (req, res, next) => {
 
 let deleteUser = async (req, res, next) => {
     try {
-        await userModel.findByIdAndRemove(req.params.id)
+        await userModel.findByIdAndRemove(req.params.userId)
         res.status(200).json({
             message: "User deleted successfully.",
         })
@@ -65,12 +65,14 @@ let deleteUser = async (req, res, next) => {
 let addDrug = async (req, res, next) => {
     const { name, activeIngredient, category, price } = req.body
     try {
-        let drug = await drugModel.insertMany({
-            name,
-            activeIngredient,
-            category,
-            price,
-        })
+        let drug = await drugModel
+            .insertMany({
+                name,
+                activeIngredient,
+                category,
+                price,
+            })
+            .select("-__v")
         res.status(200).json({
             message: "Drug added successfully.",
             drug,
@@ -85,7 +87,7 @@ let addDrug = async (req, res, next) => {
 
 let deleteDrug = async (req, res, next) => {
     try {
-        await drugModel.findByIdAndRemove(req.params.id)
+        await drugModel.findByIdAndRemove(req.params.drugId)
         res.status(200).json({
             message: "Drug deleted successfully.",
         })
@@ -102,7 +104,7 @@ let editDrug = async (req, res) => {
     try {
         let drug = await drugModel
             .findByIdAndUpdate(
-                req.params.id,
+                req.params.drugId,
                 {
                     name,
                     activeIngredient,

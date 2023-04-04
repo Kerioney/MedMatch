@@ -38,7 +38,7 @@ let getAllDrugs = async (req, res, next) => {
 let getDrug = async (req, res, next) => {
     try {
         // Find the drug by ID
-        let drug = await drugModel.findById(req.params.id).select("-__v")
+        let drug = await drugModel.findById(req.params.drugId).select("-__v")
 
         // Find the user by ID
         const user = await userModel.findById(req.user.userId)
@@ -72,7 +72,7 @@ let similarDrugs = async (req, res, next) => {
         const currentPage = req.query.page || 1
         const perPage = req.query.perPage || 6
         let totalDrugs
-        let drug = await drugModel.findById(req.params.id)
+        let drug = await drugModel.findById(req.params.drugId)
         const count = await drugModel
             .find({
                 activeIngredient: drug.activeIngredient,
@@ -143,7 +143,7 @@ let drugSearch = async (req, res, next) => {
 const deleteHistory = async (req, res, next) => {
     try {
         const userId = req.user.userId
-        const drugId = req.params.id
+        const drugId = req.params.drugId
 
         // Find the user and update their history by removing the drug ID
         const user = await userModel.findByIdAndUpdate(
