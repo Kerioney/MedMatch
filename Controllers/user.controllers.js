@@ -192,7 +192,7 @@ let userProfile = async (req, res, next) => {
         let user = await userModel
             .findById(req.user.userId)
             .select("-password -_id -__v")
-            .populate("history")
+            .populate("searchHistory orderHistory")
         res.status(200).json({
             message: "User profile fetched successfully.",
             user,
