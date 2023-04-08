@@ -19,10 +19,16 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    history: [
+    searchHistory: [
         {
             type: Schema.Types.ObjectId,
             ref: "Drug",
+        },
+    ],
+    orderHistory: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Order",
         },
     ],
     role: {
