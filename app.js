@@ -14,6 +14,8 @@ const userRoutes = require("./Routes/user.routes")
 const drugRoutes = require("./Routes/drug.routes")
 const adminRoutes = require("./Routes/admin.routes")
 const cartRoutes = require("./Routes/cart.routes")
+const orderRoutes = require("./Routes/order.routes")
+
 connection(app)
 
 //Middleware:
@@ -28,4 +30,5 @@ app.use(userRoutes)
 app.use(drugRoutes)
 app.use("/admin", adminRoutes)
 app.use("/cart", cartRoutes)
+app.use("/order", orderRoutes)
 app.use(errorHandling)
