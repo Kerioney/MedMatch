@@ -28,7 +28,7 @@ let addItemToCart = async (req, res, next) => {
 
         // If the item is already in the cart, update the quantity
         if (itemIndex !== -1) {
-            cart.items[itemIndex].quantity += quantity
+            cart.items[itemIndex].quantity = quantity
             // itemIndex is the index of the item in the cart
         } else {
             // If the item is not in the cart, add it
