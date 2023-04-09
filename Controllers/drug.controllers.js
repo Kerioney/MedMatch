@@ -57,7 +57,7 @@ let getDrug = async (req, res, next) => {
         })
 
         // Add the drug ID to the user's history array and save the user
-        // i want to cancel the duplicate search
+        // Avoid the Duplicated Search History
         if (user.searchHistory.includes(req.params.drugId)) {
             return await user.save()
         } else {
