@@ -57,8 +57,13 @@ let getDrug = async (req, res, next) => {
         })
 
         // Add the drug ID to the user's history array and save the user
-        user.history.push(req.params.id)
-        await user.save()
+        // i want to cancel the duplicate search
+        if (user.searchHistory.includes(req.params.drugId)) {
+            return await user.save()
+        } else {
+            user.searchHistory.push(req.params.drugId)
+            await user.save()
+        }
     } catch (err) {
         // Handle errors
         if (!err.statusCode) {
@@ -148,7 +153,7 @@ const deleteHistory = async (req, res, next) => {
         // Find the user and update their history by removing the drug ID
         const user = await userModel.findByIdAndUpdate(
             userId,
-            { $pull: { history: drugId } }, // $pull removes the drug ID from the history array
+            { $pull: { SearchHistory: drugId } }, // $pull removes the drug ID from the history array
             { new: true }
         )
 
