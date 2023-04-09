@@ -59,7 +59,7 @@ let getCartItems = async (req, res, next) => {
         // Find the user's cart and populate the drug information
         const cart = await cartModel
             .findOne({ user: userId })
-            .populate("items.drug", "name category -_id")
+            .populate("items.drug", "name -_id")
             .populate("user", "userName email -_id")
             .select("-__v")
         if (!cart || cart.items.length === 0) {
@@ -74,34 +74,6 @@ let getCartItems = async (req, res, next) => {
             Message: "Fetched Cart Items",
             cart,
             totalPrice,
-        })
-    } catch (err) {
-        if (!err.statusCode) {
-            err.statusCode = 500
-        }
-        next(err)
-    }
-}
-
-const editCartItem = async (req, res, next) => {
-    const userId = req.user.userId
-    const { itemId } = req.params
-    const { quantity } = req.body
-
-    try {
-        // Find the cart item to edit
-        const cart = await cartModel.findOne({ user: userId })
-        const cartItem = cart.items.id(itemId)
-
-        // Update the quantity of the cart item
-        cartItem.quantity = quantity
-
-        // Save the cart
-        await cart.save()
-
-        res.status(200).json({
-            message: "Cart item updated successfully",
-            cart: cart,
         })
     } catch (err) {
         if (!err.statusCode) {
@@ -137,5 +109,4 @@ module.exports = {
     addItemToCart,
     getCartItems,
     removeItemFromCart,
-    editCartItem,
 }
