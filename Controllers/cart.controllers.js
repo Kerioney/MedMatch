@@ -43,7 +43,7 @@ let addItemToCart = async (req, res, next) => {
         // Save the cart
         await cart.save()
 
-        res.status(200).json({ Message: "Item added to cart", cart })
+        res.status(200).json({ Message: "Item added to cart" })
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500
@@ -96,7 +96,7 @@ let removeItemFromCart = async (req, res, next) => {
 
         await cart.save()
 
-        res.status(200).json({ Message: "Item removed from cart", cart })
+        res.status(200).json({ Message: "Item removed from cart" })
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500
