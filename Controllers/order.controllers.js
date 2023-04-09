@@ -103,9 +103,43 @@ const cancelOrder = async (req, res, next) => {
         next(err)
     }
 }
+// i want to delete the order from the user's order history if the order statues cancelled
+
+let deleteOrderHistory = async (req, res, next) => {
+    const { orderId } = req.params
+    const userId = req.user.userId
+    try {
+        const orderStats = await orderModel.findById(orderId)
+        if (orderStats.status === "cancelled") {
+            // Find the user and update their history by removing the order ID
+            await userModel.findByIdAndUpdate(
+                userId,
+                { $pull: { orderHistory: orderId } } // $pull removes the order ID from the history array
+                // { new: true }
+            )
+        } else {
+            return res.status(400).json({
+                message:
+                    "Order cannot be deleted as it has been shipped or delivered",
+            })
+        }
+        // Send a response with the updated user object
+        res.status(200).json({
+            message: "Order deleted successfully from user history.",
+            // user,
+        })
+    } catch (err) {
+        // Handle errors
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
 
 module.exports = {
     checkout,
     getOrders,
     cancelOrder,
+    deleteOrderHistory,
 }
