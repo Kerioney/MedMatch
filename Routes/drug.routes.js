@@ -6,5 +6,9 @@ route.get("/drugs", isAuth, drugController.getAllDrugs)
 route.get("/drug/:drugId", isAuth, drugController.getDrug)
 route.get("/similarDrugs/:drugId", drugController.similarDrugs)
 route.get("/search", drugController.drugSearch)
-route.delete("/deleteHistory/:drugId", isAuth, drugController.deleteHistory)
+route.delete(
+    "/deleteSearchHistory/:drugId",
+    isAuth,
+    drugController.deleteSearchHistory
+)
 module.exports = route
