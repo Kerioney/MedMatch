@@ -11,7 +11,9 @@ let checkout = async (req, res, next) => {
         const cart = await cartModel.findOne({ user: userId })
 
         if (!cart || cart.items.length === 0) {
-            return res.status(404).json({ message: "Cart is empty." })
+            const error = new Error("Cart is empty")
+            error.statusCode = 204
+            throw error
         }
 
         const order = new orderModel({
@@ -53,9 +55,9 @@ let getOrders = async (req, res, next) => {
             .select("-__v")
 
         if (!orders || orders.length === 0) {
-            return res.status(200).json({
-                message: "No orders found",
-            })
+            const error = new Error("No orders found")
+            error.statusCode = 204
+            throw error
         }
 
         res.status(200).json({
@@ -79,10 +81,11 @@ const cancelOrder = async (req, res, next) => {
 
         // Check if the order status is "shipped" or "delivered"
         if (order.status === "shipped" || order.status === "delivered") {
-            return res.status(400).json({
-                message:
-                    "Order cannot be deleted as it has been shipped or delivered",
-            })
+            const error = new Error(
+                "Order cannot be cancelled as it has been shipped or delivered"
+            )
+            error.statusCode = 400
+            throw error
         }
 
         // Update the status in the user's order history to "cancelled"
@@ -118,10 +121,11 @@ let deleteOrderHistory = async (req, res, next) => {
                 // { new: true }
             )
         } else {
-            return res.status(400).json({
-                message:
-                    "Order cannot be deleted as it has been shipped or delivered",
-            })
+            const error = new Error(
+                "Order cannot be deleted as it has been shipped or delivered"
+            )
+            error.statusCode = 400
+            throw error
         }
         // Send a response with the updated user object
         res.status(200).json({

@@ -145,33 +145,6 @@ let drugSearch = async (req, res, next) => {
     }
 }
 
-// const deleteHistory = async (req, res, next) => {
-//     try {
-//         const userId = req.user.userId
-//         const drugId = req.params.drugId
-
-//         // Find the user and update their history by removing the drug ID
-//         const user = await userModel.findByIdAndUpdate(
-//             userId,
-//             { $pull: { SearchHistory: drugId } }, // $pull removes the drug ID from the history array
-//             { new: true }
-//         )
-
-//         // Send a response with the updated user object
-//         res.status(200).json({
-//             message: "Drug deleted successfully from user history.",
-//             user,
-//         })
-//     } catch (err) {
-//         // Handle errors
-//         if (!err.statusCode) {
-//             err.statusCode = 500
-//         }
-//         next(err)
-//     }
-// }
-
-// make api to delete the search history of the user by drug id
 const deleteSearchHistory = async (req, res, next) => {
     try {
         const userId = req.user.userId

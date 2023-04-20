@@ -1,9 +1,8 @@
 const userModel = require("../Models/user.model")
-// const nodemailer = require("nodemailer")
 const jwt = require("jsonwebtoken")
 const sgMail = require("@sendgrid/mail")
 
-let signup = async (req, res) => {
+let signup = async (req, res, next) => {
     const { email, password, userName } = req.body
 
     try {
@@ -83,11 +82,15 @@ let login = async (req, res, next) => {
     try {
         let user = await userModel.findOne({ email })
         if (!user) {
-            res.status(404).json({ message: "User not found" })
+            const error = new Error("User not found")
+            error.statusCode = 401
+            throw error
         } else {
             let isMatch = await user.isValidPassword(password)
             if (!isMatch) {
-                res.status(401).json({ message: "Incorrect password" })
+                const error = new Error("Incorrect password")
+                error.statusCode = 401
+                throw error
             } else {
                 let token = jwt.sign(
                     {
@@ -115,13 +118,14 @@ let login = async (req, res, next) => {
     }
 }
 
-// forget password
 let forgetPassword = async (req, res, next) => {
     const { email } = req.body
     try {
         const checkMail = await userModel.find({ email })
         if (!checkMail || checkMail.length === 0) {
-            res.status(404).json({ message: "Email doesn't exist." })
+            const error = new Error("Email not found")
+            error.statusCode = 401
+            throw error
         } else {
             let token = jwt.sign({ email }, process.env.TOKEN_HASH, {
                 expiresIn: "1h",
@@ -164,8 +168,6 @@ let forgetPassword = async (req, res, next) => {
         next(err)
     }
 }
-// change password
-// the token is sent to the user's email
 
 let resetPassword = async (req, res, next) => {
     const { password } = req.body

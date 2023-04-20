@@ -63,9 +63,9 @@ let getCartItems = async (req, res, next) => {
             .populate("user", "userName email -_id")
             .select("-__v")
         if (!cart || cart.items.length === 0) {
-            return res.status(200).json({
-                Message: "Cart is empty",
-            })
+            const error = new Error("No items in cart")
+            error.statusCode = 204
+            throw error
         }
 
         const totalPrice = cart.getTotalPrice()
