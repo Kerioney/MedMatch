@@ -21,7 +21,7 @@ connection(app)
 //Middleware:
 app.use(logger)
 app.use(express.json())
-// app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }))
 app.use(helmet())
 app.use(mongoSanitize())
 app.use(cors())

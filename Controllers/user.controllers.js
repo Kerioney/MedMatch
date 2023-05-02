@@ -32,7 +32,7 @@ let signup = async (req, res, next) => {
                     <h2>Verify your email address</h2>
                     <p>Hi ${userName},</p>
                     <p>Please click on the following link to verify your email address:</p>
-                    <p style="text-align: center; margin-top: 30px;"><a href="http://localhost:3000/verify?token=${token}" style="background-color: #4CAF50; color: #ffffff; padding: 12px 20px; text-decoration: none; display: inline-block; border-radius: 5px;">Verify Email</a></p>
+                    <p style="text-align: center; margin-top: 30px;"><a href="https://medmatch.onrender.com/verify?token=${token}" style="background-color: #4CAF50; color: #ffffff; padding: 12px 20px; text-decoration: none; display: inline-block; border-radius: 5px;">Verify Email</a></p>
                     <p>If you did not create an account with us, please ignore this email.</p>
                   </div>
                 </div>
