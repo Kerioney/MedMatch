@@ -1,4 +1,4 @@
-const { StatusCodes, getReasonPhrase } = require("http-status-codes")
+const { StatusCodes } = require("http-status-codes")
 
 module.exports = (schema) => {
     try {
