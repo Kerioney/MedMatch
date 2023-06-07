@@ -171,10 +171,35 @@ const deleteSearchHistory = async (req, res, next) => {
     }
 }
 
+let deleteAllHistory = async (req, res, next) => {
+    try {
+        const userId = req.user.userId
+        // Find the user and update their history by removing the drug ID
+        await userModel.findByIdAndUpdate(
+            userId,
+            { $set: { searchHistory: [] } } // $pull removes the drug ID from the history array
+            // { new: true }
+        )
+
+        // Send a response with the updated user object
+        res.status(200).json({
+            message: "All history deleted successfully.",
+            // user,
+        })
+    } catch (err) {
+        // Handle errors
+        if (!err.statusCode) {
+            err.statusCode = 500
+        }
+        next(err)
+    }
+}
+
 module.exports = {
     getAllDrugs,
     getDrug,
     similarDrugs,
     drugSearch,
     deleteSearchHistory,
+    deleteAllHistory,
 }

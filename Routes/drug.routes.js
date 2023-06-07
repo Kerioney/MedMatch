@@ -11,4 +11,5 @@ route.delete(
     isAuth,
     drugController.deleteSearchHistory
 )
+route.delete("/deleteAllHistory", isAuth, drugController.deleteAllHistory)
 module.exports = route
