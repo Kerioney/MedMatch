@@ -47,7 +47,9 @@ let getOrders = async (req, res, next) => {
     try {
         // Find the user's orders and populate the order information
         const orders = await orderModel
-            .find({ user: userId })
+            // i want to get all order that aren't cancelled
+
+            .find({ user: userId, status: { $not: { $eq: "cancelled" } } }) // Exclude orders with status "cancelled"
             // i want to populate the items.drug field with the drug information and the user email with the user information
             .populate("items.drug", " name  -_id")
             .select("-items._id")
