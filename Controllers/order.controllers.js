@@ -50,7 +50,6 @@ let getOrders = async (req, res, next) => {
             // i want to get all order that aren't cancelled
 
             .find({ user: userId, status: { $not: { $eq: "cancelled" } } }) // Exclude orders with status "cancelled"
-            // i want to populate the items.drug field with the drug information and the user email with the user information
             .populate("items.drug", " name  -_id")
             .select("-items._id")
             .populate("user", "userName email -_id")
@@ -114,28 +113,38 @@ let deleteOrderHistory = async (req, res, next) => {
     const { orderId } = req.params
     const userId = req.user.userId
     try {
-        const orderStats = await orderModel.findById(orderId)
+        const orderStats = await orderModel.findById(orderId).lean()
+
+        if (!orderStats) {
+            const error = new Error("Order not found")
+            error.statusCode = 404
+            throw error
+        }
+
         if (orderStats.status === "cancelled") {
-            // Find the user and update their history by removing the order ID
-            await userModel.findByIdAndUpdate(
+            const result = await userModel.findByIdAndUpdate(
                 userId,
-                { $pull: { orderHistory: orderId } } // $pull removes the order ID from the history array
-                // { new: true }
+                { $pull: { orderHistory: orderId } },
+                { new: true }
             )
+
+            if (!result) {
+                const error = new Error("User not found")
+                error.statusCode = 404
+                throw error
+            }
+
+            res.status(200).json({
+                message: "Order deleted successfully from user history.",
+            })
         } else {
             const error = new Error(
-                "Order cannot be deleted as it has been shipped or delivered"
+                "Order cannot be deleted as it has not been cancelled"
             )
             error.statusCode = 400
             throw error
         }
-        // Send a response with the updated user object
-        res.status(200).json({
-            message: "Order deleted successfully from user history.",
-            // user,
-        })
     } catch (err) {
-        // Handle errors
         if (!err.statusCode) {
             err.statusCode = 500
         }
