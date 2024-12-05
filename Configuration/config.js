@@ -5,10 +5,8 @@ const connection = async (app) => {
     try {
         await mongoose
             .set("strictQuery", false)
-            .connect(process.env.CONNECTION_STRING, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            })
+            .connect(process.env.CONNECTION_STRING, 
+            )
         app.listen(process.env.PORT || 3000, () =>
             console.log(`Server is connecting on Port ${process.env.PORT}`)
         )
